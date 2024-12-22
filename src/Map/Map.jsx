@@ -34,8 +34,7 @@ import { colorMappings, buildHeightgraphData } from 'utils/heightgraph'
 import formatDuration from 'utils/date_time'
 import './Map.css'
 const OSMTiles = L.tileLayer(process.env.REACT_APP_TILE_SERVER_URL, {
-  attribution:
-    '<a href="https://map.project-osrm.org/about.html" target="_blank">About this service and privacy policy</a> | &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  attribution: '© Contributors',
 })
 
 const convertDDToDMS = (decimalDegrees) =>
@@ -141,9 +140,6 @@ class Map extends React.Component {
 
   // and once the component has mounted we add everything to it
   componentDidMount() {
-    // our map!
-    //const { dispatch } = this.props
-
     this.map = L.map('map', mapParams)
 
     // we create a leaflet pane which will hold all isochrone polygons with a given opacity
@@ -152,7 +148,7 @@ class Map extends React.Component {
 
     // our basemap and add it to the map
     const baseMaps = {
-      OpenStreetMap: OSMTiles,
+      Map: OSMTiles,
     }
 
     const overlayMaps = {
@@ -171,31 +167,6 @@ class Map extends React.Component {
         position: 'topright',
       })
       .addTo(this.map)
-
-    //and for the sake of advertising your company, you may add a logo to the map
-    const brand = L.control({
-      position: 'bottomleft',
-    })
-    brand.onAdd = (map) => {
-      const div = L.DomUtil.create('div', 'brand')
-      div.innerHTML =
-        '<a href="https://fossgis.de/news/2021-11-12_funding_valhalla/" target="_blank"><div class="fossgis-logo"></div></a>'
-      return div
-    }
-
-    this.map.addControl(brand)
-
-    const valhallaBrand = L.control({
-      position: 'bottomleft',
-    })
-    valhallaBrand.onAdd = (map) => {
-      const div = L.DomUtil.create('div', 'brand')
-      div.innerHTML =
-        '<a href="https://github.com/valhalla/valhalla" target="_blank"><div class="valhalla-logo"></div></a>'
-      return div
-    }
-
-    this.map.addControl(valhallaBrand)
 
     const popup = L.popup({ className: 'valhalla-popup' })
 
@@ -1121,13 +1092,6 @@ class Map extends React.Component {
             theme="light"
           />
           <div id="map" className="map-style" />
-          <button
-            className="ui primary button"
-            id="osm-button"
-            onClick={this.handleOpenOSM}
-          >
-            Open OSM
-          </button>
         </div>
         <div>
           {this.state.showPopup && leafletPopupDiv

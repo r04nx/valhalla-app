@@ -5,7 +5,7 @@ import { Divider } from 'semantic-ui-react'
 
 import Waypoints from './Waypoints'
 
-import { ProfilePicker } from '../../components/profile-picker'
+// import { ProfilePicker } from '../../components/profile-picker'
 import { SettingsButton } from '../../components/SettingsButton'
 import { SettingsFooter } from 'components/SettingsFooter'
 

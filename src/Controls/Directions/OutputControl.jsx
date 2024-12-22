@@ -1,16 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { Segment, Button, Icon } from 'semantic-ui-react'
-import L from 'leaflet'
+import { Segment, Button } from 'semantic-ui-react'
 
 import { makeRequest } from 'actions/directionsActions'
-import { downloadFile } from 'actions/commonActions'
 import Summary from './Summary'
 import Maneuvers from './Maneuvers'
 import { VALHALLA_OSM_URL } from 'utils/valhalla'
-import jsonFormat from 'json-format'
-import { jsonConfig } from 'Controls/settings-options'
 
 class OutputControl extends React.Component {
   static propTypes = {
@@ -61,41 +57,6 @@ class OutputControl extends React.Component {
     })
   }
 
-  dateNow() {
-    let dtNow = new Date()
-    dtNow =
-      [dtNow.getMonth() + 1, dtNow.getDate(), dtNow.getFullYear()].join('/') +
-      '_' +
-      [dtNow.getHours(), dtNow.getMinutes(), dtNow.getSeconds()].join(':')
-    return dtNow
-  }
-  exportToJson = (e) => {
-    const { results } = this.props
-    const { data } = results[VALHALLA_OSM_URL]
-    const formattedData = jsonFormat(data, jsonConfig)
-    e.preventDefault()
-    downloadFile({
-      data: formattedData,
-      fileName: 'valhalla-directions_' + this.dateNow() + '.json',
-      fileType: 'text/json',
-    })
-  }
-
-  exportToGeoJson = (e) => {
-    const { results } = this.props
-    const coordinates = results[VALHALLA_OSM_URL].data.decodedGeometry
-    const formattedData = jsonFormat(
-      L.polyline(coordinates).toGeoJSON(),
-      jsonConfig
-    )
-    e.preventDefault()
-    downloadFile({
-      data: formattedData,
-      fileName: 'valhalla-directions_' + this.dateNow() + '.geojson',
-      fileType: 'text/json',
-    })
-  }
-
   render() {
     const { results, successful } = this.props
 
@@ -130,24 +91,6 @@ class OutputControl extends React.Component {
                     ? 'Hide Maneuvers'
                     : 'Show Maneuvers'}
                 </Button>
-                <div className={'flex'}>
-                  <div
-                    className={'flex pointer'}
-                    style={{ alignSelf: 'center' }}
-                    onClick={this.exportToJson}
-                  >
-                    <Icon circular name={'download'} />
-                    <div className={'pa1 b f6'}>{'JSON'}</div>
-                  </div>
-                  <div
-                    className={'ml2 flex pointer'}
-                    style={{ alignSelf: 'center' }}
-                    onClick={this.exportToGeoJson}
-                  >
-                    <Icon circular name={'download'} />
-                    <div className={'pa1 b f6'}>{'GeoJSON'}</div>
-                  </div>
-                </div>
               </div>
 
               {this.state.showResults[i] ? (
@@ -188,24 +131,6 @@ class OutputControl extends React.Component {
                   ? 'Hide Maneuvers'
                   : 'Show Maneuvers'}
               </Button>
-              <div className={'flex'}>
-                <div
-                  className={'flex pointer'}
-                  style={{ alignSelf: 'center' }}
-                  onClick={this.exportToJson}
-                >
-                  <Icon circular name={'download'} />
-                  <div className={'pa1 b f6'}>{'JSON'}</div>
-                </div>
-                <div
-                  className={'ml2 flex pointer'}
-                  style={{ alignSelf: 'center' }}
-                  onClick={this.exportToGeoJson}
-                >
-                  <Icon circular name={'download'} />
-                  <div className={'pa1 b f6'}>{'GeoJSON'}</div>
-                </div>
-              </div>
             </div>
 
             {this.state.showResults[-1] ? (

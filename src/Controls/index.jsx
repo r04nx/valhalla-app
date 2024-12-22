@@ -5,12 +5,9 @@ import Drawer from 'react-modern-drawer'
 import 'react-modern-drawer/dist/index.css'
 import { toast } from 'react-toastify'
 import DirectionsControl from './Directions'
-import IsochronesControl from './Isochrones'
 import DirectionOutputControl from './Directions/OutputControl'
-import IsochronesOutputControl from './Isochrones/OutputControl'
-import { Segment, Tab, Button, Icon } from 'semantic-ui-react'
+import { Segment, Button, Icon, Tab } from 'semantic-ui-react'
 import {
-  updateTab,
   updateProfile,
   updatePermalink,
   zoomTo,
@@ -18,11 +15,6 @@ import {
   toggleDirections,
 } from 'actions/commonActions'
 import { fetchReverseGeocodePerma } from 'actions/directionsActions'
-import {
-  fetchReverseGeocodeIso,
-  updateIsoSettings,
-} from 'actions/isochronesActions'
-import { VALHALLA_OSM_URL } from 'utils/valhalla'
 
 const pairwise = (arr, func) => {
   let cnt = 0
@@ -37,54 +29,27 @@ class MainControl extends React.Component {
     dispatch: PropTypes.func.isRequired,
     message: PropTypes.object,
     activeDataset: PropTypes.string,
-    activeTab: PropTypes.number,
     showDirectionsPanel: PropTypes.bool,
-    lastUpdate: PropTypes.object,
-  }
-
-  async getLastUpdate() {
-    const response = await fetch(`${VALHALLA_OSM_URL}/status`)
-    const data = await response.json()
-    this.setState({
-      lastUpdate: new Date(data.tileset_last_modified * 1000),
-    })
   }
 
   componentDidMount = () => {
     const { dispatch } = this.props
 
-    this.getLastUpdate()
-
-    toast.success(
-      'Welcome to Valhalla! Global Routing Service - funded by FOSSGIS e.V.',
-      {
-        position: 'bottom-center',
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: 'light',
-      }
-    )
+    toast.success('Welcome to noUlez! Routing Service by Alesa.ai', {
+      position: 'bottom-center',
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: 'light',
+    })
 
     const params = Object.fromEntries(new URL(document.location).searchParams)
 
     if ('profile' in params) {
       dispatch(updateProfile({ profile: params.profile }))
-    }
-
-    let activeTab
-    if (
-      window.location.pathname === '/' ||
-      window.location.pathname === '/directions'
-    ) {
-      activeTab = 0
-      dispatch(updateTab({ activeTab }))
-    } else if (window.location.pathname === '/isochrones') {
-      activeTab = 1
-      dispatch(updateTab({ activeTab }))
     }
 
     if ('wps' in params && params.wps.length > 0) {
@@ -99,50 +64,7 @@ class MainControl extends React.Component {
           index: i,
         }
         processedCoords.push([latLng.lat, latLng.lng])
-        if (activeTab === 0) {
-          dispatch(fetchReverseGeocodePerma(payload))
-        } else {
-          dispatch(fetchReverseGeocodeIso(current, next))
-
-          if ('range' in params && 'interval' in params) {
-            const maxRangeName = 'maxRange'
-            const intervalName = 'interval'
-            const maxRangeValue = params.range
-            const intervalValue = params.interval
-
-            dispatch(
-              updateIsoSettings({
-                maxRangeName,
-                intervalName,
-                value: maxRangeValue,
-              })
-            )
-            dispatch(
-              updateIsoSettings({
-                undefined,
-                intervalName,
-                value: intervalValue,
-              })
-            )
-          }
-
-          if ('denoise' in params) {
-            dispatch(
-              updateIsoSettings({
-                denoiseName: 'denoise',
-                value: params.denoise,
-              })
-            )
-          }
-          if ('generalize' in params) {
-            dispatch(
-              updateIsoSettings({
-                generalizeName: 'generalize',
-                value: params.generalize,
-              })
-            )
-          }
-        }
+        dispatch(fetchReverseGeocodePerma(payload))
       })
       dispatch(zoomTo(processedCoords))
       dispatch(resetSettings())
@@ -169,7 +91,7 @@ class MainControl extends React.Component {
     const { dispatch } = this.props
     const activeTab = data.activeIndex
 
-    dispatch(updateTab({ activeTab }))
+    dispatch({ type: 'UPDATE_TAB', activeTab })
     dispatch(updatePermalink())
   }
 
@@ -189,21 +111,12 @@ class MainControl extends React.Component {
   }
 
   render() {
-    const { activeTab } = this.props
     const appPanes = [
       {
         menuItem: 'Directions',
         render: () => (
           <Tab.Pane style={{ padding: '0 0 0 0' }} attached={false}>
             <DirectionsControl />
-          </Tab.Pane>
-        ),
-      },
-      {
-        menuItem: 'Isochrones',
-        render: () => (
-          <Tab.Pane style={{ padding: '0 0 0 0' }} attached={false}>
-            <IsochronesControl />
           </Tab.Pane>
         ),
       },
@@ -215,31 +128,28 @@ class MainControl extends React.Component {
           icon
           style={{ float: 'right', marginLeft: '5px' }}
           onClick={this.handleDirectionsToggle}
+          color="red"
         >
           <Icon name="close" />
         </Button>
-        <Tab
-          activeIndex={activeTab}
-          onTabChange={this.handleTabChange}
-          menu={{ pointing: true }}
-          panes={appPanes}
-        />
+        <Tab activeIndex={0} menu={{ pointing: true }} panes={appPanes} />
       </>
     )
-
     return (
       <>
         <Button
-          primary
           style={{
             zIndex: 998,
             top: '10px',
             left: '10px',
             position: 'absolute',
+            backgroundColor: '#4CAF50',
+            color: 'white',
           }}
           onClick={this.handleDirectionsToggle}
         >
-          {activeTab === 0 ? 'Directions' : 'Isochrones'}
+          <Icon name="map" style={{ marginRight: '8px' }} />
+          Directions
         </Button>
         <Drawer
           enableOverlay={false}
@@ -251,31 +161,46 @@ class MainControl extends React.Component {
             overflow: 'auto',
           }}
         >
+          <div
+            className="directions-header-brand"
+            style={{
+              background: 'linear-gradient(135deg, #4CAF50 0%, #388E3C 100%)',
+              padding: '1rem',
+              display: 'flex',
+              alignItems: 'center',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+            }}
+          >
+            <img
+              src="/noulez-logo.png"
+              alt="NoUlez Logo"
+              className="noulez-logo"
+              style={{
+                width: '40px',
+                height: '40px',
+                marginRight: '12px',
+                filter: 'drop-shadow(0 2px 2px rgba(0,0,0,0.2))',
+              }}
+            />
+            <h1
+              style={{
+                color: 'white',
+                margin: 0,
+                fontSize: '24px',
+                fontWeight: '600',
+                textShadow: '0 1px 2px rgba(0,0,0,0.2)',
+              }}
+            >
+              NoUlez
+            </h1>
+          </div>
           <div>
             <Segment basic style={{ paddingBottom: 0 }}>
               <div>
                 <ServiceTabs />
               </div>
             </Segment>
-            {(activeTab === 0 && <DirectionOutputControl />) || (
-              <IsochronesOutputControl />
-            )}
-          </div>
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'flex-start',
-              margin: '1rem',
-            }}
-          >
-            Last Data Update:{' '}
-            {this.state
-              ? `${this.state.lastUpdate
-                  .toISOString()
-                  .slice(0, 10)}, ${this.state.lastUpdate
-                  .toISOString()
-                  .slice(11, 16)}`
-              : '0000-00-00, 00:00'}
+            <DirectionOutputControl />
           </div>
         </Drawer>
       </>

@@ -7,7 +7,7 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: 'Poppins', Arial, Helvetica, sans-serif;
+  font-family: 'Poppins', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -99,24 +99,59 @@ i.help.grey.icon {
   padding: 0;
 }
 
-.MuiDrawer-paper {
-  box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+.directions-control {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #ffffff;
 }
 
-.MuiButton-root {
-  text-transform: none;
+.directions-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
 }
 
-.MuiIconButton-root {
-  padding: 6px;
+.directions-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
 }
 
-@media (max-width: 600px) {
-  .MuiDrawer-paper {
-    width: 100%;
-  }
-  
-  .directions-control {
-    width: 100%;
-  }
+.directions-waypoints {
+  flex: 1;
+}
+
+.directions-settings {
+  padding: 0.5rem 0;
+}
+
+.directions-footer {
+  border-top: 1px solid #eaeaea;
+  padding: 1rem;
+}
+
+.directions-header-brand {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  background: #ffffff;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.directions-header-brand h1 {
+  margin: 0;
+  margin-left: 1rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.noulez-logo {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
 }
