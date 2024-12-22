@@ -6,10 +6,9 @@ import 'react-modern-drawer/dist/index.css'
 import { toast } from 'react-toastify'
 import DirectionsControl from './Directions'
 import DirectionOutputControl from './Directions/OutputControl'
-import { Segment, Button, Icon, Tab } from 'semantic-ui-react'
+import { Segment, Button, Icon } from 'semantic-ui-react'
 import {
   updateProfile,
-  updatePermalink,
   zoomTo,
   resetSettings,
   toggleDirections,
@@ -87,14 +86,6 @@ class MainControl extends React.Component {
     }
   }
 
-  handleTabChange = (event, data) => {
-    const { dispatch } = this.props
-    const activeTab = data.activeIndex
-
-    dispatch({ type: 'UPDATE_TAB', activeTab })
-    dispatch(updatePermalink())
-  }
-
   handleDirectionsToggle = (event, data) => {
     const { dispatch } = this.props
     const { showDirectionsPanel } = this.props
@@ -111,30 +102,6 @@ class MainControl extends React.Component {
   }
 
   render() {
-    const appPanes = [
-      {
-        menuItem: 'Directions',
-        render: () => (
-          <Tab.Pane style={{ padding: '0 0 0 0' }} attached={false}>
-            <DirectionsControl />
-          </Tab.Pane>
-        ),
-      },
-    ]
-
-    const ServiceTabs = () => (
-      <>
-        <Button
-          icon
-          style={{ float: 'right', marginLeft: '5px' }}
-          onClick={this.handleDirectionsToggle}
-          color="red"
-        >
-          <Icon name="close" />
-        </Button>
-        <Tab activeIndex={0} menu={{ pointing: true }} panes={appPanes} />
-      </>
-    )
     return (
       <>
         <Button
@@ -196,9 +163,15 @@ class MainControl extends React.Component {
           </div>
           <div>
             <Segment basic style={{ paddingBottom: 0 }}>
-              <div>
-                <ServiceTabs />
-              </div>
+              <Button
+                icon
+                style={{ float: 'right', marginLeft: '5px' }}
+                onClick={this.handleDirectionsToggle}
+                color="red"
+              >
+                <Icon name="close" />
+              </Button>
+              <DirectionsControl />
             </Segment>
             <DirectionOutputControl />
           </div>

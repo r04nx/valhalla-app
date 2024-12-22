@@ -70,16 +70,12 @@ if (localStorage.getItem('last_center')) {
   center = last_center.center
   zoom_initial = last_center.zoom_level
 }
-
-const maxBoundsString = process.env.REACT_APP_MAX_BOUNDS?.split(',')
-const maxBounds = maxBoundsString
-  ? [
-      //south west corner
-      [parseFloat(maxBoundsString[0]), parseFloat(maxBoundsString[1])],
-      //north east corner
-      [parseFloat(maxBoundsString[2]), parseFloat(maxBoundsString[3])],
-    ]
-  : undefined
+const maxBounds = [
+  // South West corner (approximately Cornwall)
+  [50.0, -5.7],
+  // North East corner (approximately Scotland)
+  [58.7, 1.8],
+]
 
 // a leaflet map consumes parameters, I'd say they are quite self-explanatory
 const mapParams = {
@@ -89,7 +85,7 @@ const mapParams = {
   zoomControl: false,
   zoom: zoom_initial,
   maxZoom: 18,
-  minZoom: 2,
+  minZoom: 5,
   worldCopyJump: true,
   layers: [
     isoCenterLayer,

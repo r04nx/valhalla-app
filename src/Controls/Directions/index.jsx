@@ -6,8 +6,6 @@ import { Divider } from 'semantic-ui-react'
 import Waypoints from './Waypoints'
 
 import { ProfilePicker } from 'components/profile-picker'
-import { SettingsButton } from 'components/SettingsButton'
-import { SettingsFooter } from 'components/SettingsFooter'
 import { Settings } from './settings'
 import { DateTimePicker } from 'components/DateTimePicker'
 
@@ -19,7 +17,6 @@ import {
 } from 'actions/directionsActions'
 import {
   updateProfile,
-  doShowSettings,
   updatePermalink,
   resetSettings,
   doUpdateDateTime,
@@ -61,11 +58,6 @@ class DirectionsControl extends React.Component {
     if (this.props.profile !== nextProps.profile) {
       dispatch(makeRequest())
     }
-  }
-
-  handleSettings = () => {
-    const { dispatch } = this.props
-    dispatch(doShowSettings())
   }
 
   handleDateTime = (type, value) => {
@@ -116,7 +108,6 @@ class DirectionsControl extends React.Component {
                 activeProfile={profile}
                 handleUpdateProfile={this.handleUpdateProfile}
               />
-              <SettingsButton handleSettings={this.handleSettings} />
             </div>
             <div className="flex flex-wrap justify-between">
               <Waypoints />
@@ -134,7 +125,6 @@ class DirectionsControl extends React.Component {
             />
           </div>
           <Divider fitted />
-          <SettingsFooter />
         </div>
       </React.Fragment>
     )
